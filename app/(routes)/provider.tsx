@@ -17,20 +17,26 @@ function DashboardProvider({
     const router = useRouter();
 
     useEffect(() => {
-        if (!user?.user && user.user) return router.replace('/')
+        // Redirect to home if user is not authenticated
+        if (!user?.user) {
+            router.replace('/');
+            return;
+        }
 
-
-        user?.user && checkUser()
-
-    }, [user])
-
+        // Check user in database if authenticated
+        checkUser();
+    }, [user]);
 
     const checkUser = async () => {
-        const result = await axios.post('/api/user', {
-            userName: user?.user?.displayName,
-            userEmail: user?.user?.email
-        });
-        console.log(user);
+        try {
+            const result = await axios.post('/api/user', {
+                userName: user?.user?.displayName,
+                userEmail: user?.user?.email
+            });
+            console.log('User data received:', result.data);
+        } catch (error) {
+            console.error('Error checking user:', error);
+        }
     }
 
 
